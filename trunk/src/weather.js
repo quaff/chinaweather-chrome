@@ -1,9 +1,14 @@
 
 function getProvinceAndCity(){
 var arr = [];
-if (typeof IPData != 'undefined'){  
-    arr[0] = IPData[2].replace('省','');  
-    arr[1] = IPData[3].replace('市','')||province;
+if (typeof IPData != 'undefined'){
+    if(IPData[3]){	
+    	arr[0] = IPData[2].replace('省','');  
+    	arr[1] = IPData[3].replace('市','');
+    }else{
+	arr[0] = IPData[2].replace('市','');  
+    	arr[1] = arr[0];
+    }
 }
 return arr.join(',');
 }
