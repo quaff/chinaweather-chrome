@@ -1,22 +1,19 @@
-
-function getProvinceAndCity(){
-var arr = [];
+function getCityId(){
+if(!localStorage.cityId){
+var cityId='';
+var pc = [];
 if (typeof IPData != 'undefined'){
     if(IPData[3]){	
-    	arr[0] = IPData[2].replace('省','');  
-    	arr[1] = IPData[3].replace('市','');
+	pc[0] = IPData[2];
+	pc[1] = IPData[3];
+	if(pc[0].length>3)pc[0] = pc[0].substring(0,3);
+    	pc[0] = pc[0].replace('省','');  
+    	pc[1] = pc[1].replace('市','');
     }else{
-	arr[0] = IPData[2].replace('市','');  
-    	arr[1] = arr[0];
+	pc[0] = IPData[2].replace('市','');  
+    	pc[1] = pc[0];
     }
 }
-return arr.join(',');
-}
-
-
-function getCityId(provinceAndCity){
-var pc = provinceAndCity.split(',');
-var cityId = '';
 $.ajax({  
     url: 'http://service.weather.com.cn/plugin/data/city.xml',
     async: false,
@@ -50,13 +47,15 @@ $.ajax({
     } 
     }  
  });
-return cityId;
+cityId = '101'+cityId+(/^0[1-4].*$/.exec(cityId)?'00':'01');
+localStorage.cityId = cityId;
+}
+return localStorage.cityId;
 }
 
 function getWeather(cityId){
-var fullCityId = '101'+cityId+(/^0[1-4].*$/.exec(cityId)?'00':'01');
 $.ajax({  
-    url: 'http://www.weather.com.cn/html/weather/'+fullCityId+'.shtml',
+    url: 'http://www.weather.com.cn/html/weather/'+cityId+'.shtml',
     async: false,
     dataType: 'html',  
     success: function(html){
@@ -73,4 +72,10 @@ $.ajax({
   });
 }
 
-getWeather(getCityId(getProvinceAndCity()));
+function refresh(){
+$('#weather').text('数据加载中...');
+delete(localStorage.cityId);
+getWeather(getCityId());
+}
+
+getWeather(getCityId());
