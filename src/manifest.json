@@ -1,6 +1,6 @@
 {
     "name": "ChinaWeather",
-    "version": "0.4",
+    "version": "0.5",
     "description": "中国城市天气",
     "update_url": "http://chinaweather-chrome.googlecode.com/svn/trunk/updates.xml",
     "browser_action": {

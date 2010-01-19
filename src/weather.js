@@ -63,9 +63,9 @@ $.ajax({
     var div = $("<div/>").append(html);
     $('#weather').html($('div.weatherYubao',div).html());
     div.remove();
-    $('#weather img').each(function(){$(this).attr('src','http://www.weather.com.cn'+$(this).attr('src'))});
+    $('#weather img').attr('src',function(i,v){return 'http://www.weather.com.cn'+v});
     $('#weather h1.weatheH1 span').remove();
-    $('#weather td').each(function(){$(this).removeAttr('style').html($(this).text())});
+    $('#weather td').removeAttr('style').each(function(){if($('a',this).length)$(this).html($('a',this).html())});
     $('#weather table.yuBaoTable').each(function(i){$(this).addClass('day'+(i+1))});
     $('#weather table.yuBaoTable tr').hover(function(){$(this).addClass('highlight')},function(){$(this).removeClass('highlight')});
     } 
