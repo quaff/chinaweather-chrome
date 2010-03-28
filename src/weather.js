@@ -1,20 +1,18 @@
-function getCityId(){
+function getWeather(){
 if(!localStorage.cityId){
 var cityId='';
-var pc = [];
-if (typeof IPData != 'undefined'){
-    if(IPData[3]){	
-	pc[0] = IPData[2];
-	pc[1] = IPData[3];
-	if(pc[0].length>3)pc[0] = pc[0].substring(0,3);
-    	pc[0] = pc[0].replace('省','');  
-    	pc[1] = pc[1].replace('市','');
-    }else{
-	pc[0] = IPData[2].replace('市','');  
-    	pc[1] = pc[0];
-    }
+var userLatLng = new google.maps.LatLng(geoip_latitude(), geoip_longitude());
+var geocoder = new GClientGeocoder();
+geocoder.getLocations(userLatLng, function(response){
+if (!response || response.Status.code != 200) {
+app.debug("no results from reverse geocoding!");
 }
-$.ajax({  
+else {
+var node = response.Placemark[0];
+var area = node.AddressDetails.Country.AdministrativeArea;
+var province = area.AdministrativeAreaName.replace('省','');
+var city = area.Locality.LocalityName.replace('市','');
+$.ajax({
     url: 'http://service.weather.com.cn/plugin/data/city.xml',
     async: false,
     dataType: 'text',  
@@ -23,7 +21,7 @@ $.ajax({
     for(var i=0;i <arr.length;i++){
     var arr2 = arr[i].split('|');
     var pid = 0;
-    if(arr2[1] == pc[0]){
+    if(arr2[1] == province){
       pid = arr2[0];
       break;  
     }
@@ -37,7 +35,7 @@ $.ajax({
     var arr = text.split(',');  
     for(var i=0;i <arr.length;i++){
     var arr2 = arr[i].split('|');
-    if(arr2[1] == pc[1]){
+    if(arr2[1] == city){
       cityId = arr2[0];
       break;  
     }
@@ -49,11 +47,15 @@ $.ajax({
  });
 cityId = '101'+cityId+(/^0[1-4].*$/.exec(cityId)?'00':'01');
 localStorage.cityId = cityId;
+_getWeather(localStorage.cityId);
 }
-return localStorage.cityId;
+});
+}else{
+_getWeather(localStorage.cityId);	
+}
 }
 
-function getWeather(cityId){
+function _getWeather(cityId){
 $.ajax({  
     url: 'http://www.weather.com.cn/html/weather/'+cityId+'.shtml',
     async: false,
@@ -75,7 +77,7 @@ $.ajax({
 function refresh(){
 $('#weather').text('数据加载中...');
 delete(localStorage.cityId);
-getWeather(getCityId());
+getWeather();
 }
 
-getWeather(getCityId());
+getWeather();
